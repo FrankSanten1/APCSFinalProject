@@ -1,5 +1,11 @@
 class Space implements Cloneable{
+    //each object of this class represents a tile in the playing field
+
+    //holds the entity present in the space, or null if there isn't one
     private Entity entityInSpace;
+
+    //also holds a representation of how much damage will be dealt by enemies to anything in this tile next turn
+    //well, techmically the damage won't be done to enemies. ok rephrase: damage dealt by enemies to the player and anything it spawns
     private int damageNextTurn;
 
     public Space() {

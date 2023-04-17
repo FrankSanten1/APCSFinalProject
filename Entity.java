@@ -28,11 +28,15 @@ class Entity implements Cloneable{
     public int getMaxHealth() {return maxHealth;}
     public int getHealth() {return health;}
     public boolean getIfBlocksPathing() {return blocksPathing;}
+
     //setters
     public void setMaxHealth(int maxHealth) {this.maxHealth = maxHealth;}
     public void setHealth(int health) {this.health = health;}
     public void setIfBlocksPathing(boolean blocksPathing) {this.blocksPathing = blocksPathing;}
 
+    //This will be the main method for changing health of entities
+    //the setters will be for simply setting an amount (if they are ever necesary), but this is what will be used commonly whenever health must be affected
+    //so this will probably be overridden a lot if an enemy has something special happen when they take damage(for example if the enemy has armor, or if they don't take damage, etc) 
     public void affectHealth(int amount) {
         health += amount;
         if (health > maxHealth) {
@@ -40,8 +44,9 @@ class Entity implements Cloneable{
         }
     }
 
+    //same for this
     public void affectMaxHealth(int amount) {
         maxHealth += amount;
-        health += amount;
+        health += amount; //make sure you increase health alongside max health
     }
 }
