@@ -1,4 +1,5 @@
 public class TestThing implements Cloneable{
+    //me testing out how deepCopies work
     private int jig;
     TestThingThing slun;
 

@@ -1,4 +1,5 @@
 public class TestThingThing implements Cloneable{
+    //me testing out how deepCopies work
     double blam;
 
     public TestThingThing(double blam) {

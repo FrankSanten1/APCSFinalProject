@@ -4,17 +4,20 @@ import java.awt.Point;
 
 class GameRunner {
     public static void main(String[] args) throws CloneNotSupportedException{
+        //throw new YouAreActualGarbageException("ur trash on godddddddddd");
+        /* 
         Board thingy = new Board(12, 8);
         Scanner sc = new Scanner(System.in);
         Board thingier = thingy.clone();
-        thingy.addEntityToSpace(new Player(10, 10), 1, 1);
+        thingy.addEntityToSpace(new Player(10, 10), 2, 1);
         
         thingy.printBoard();
         thingier.printBoard();
         Board thingiest = thingy.clone();
         thingy.getSpace(1, 1).getEntity().setHealth(5);
-        System.out.println(thingy.getSpace(1, 1).getEntity().getHealth());
-        System.out.println(thingiest.getSpace(1, 1).getEntity().getHealth());
+        System.out.println(thingy.getSpace(2, 1).getEntity().getHealth());
+        System.out.println(thingiest.getSpace(2, 1).getEntity().getHealth());
+        */
         /* 
         while (true) {
             System.out.print("\033[H\033[2J");  

@@ -1,9 +1,9 @@
 public class PlayerStatsTracker {
-    int maxHealth;
-    int health;
-    int maxMana;
-    int mana;
-    Ability[] abilities;
+    private int maxHealth;
+    private int health;
+    private int maxMana;
+    private int mana;
+    private Ability[] abilities;
 
     public PlayerStatsTracker(int maxHealth, int health, int maxMana, int mana, Ability[] abilities) {
         this.maxHealth = maxHealth;

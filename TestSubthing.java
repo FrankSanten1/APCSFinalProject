@@ -1,4 +1,5 @@
 public class TestSubthing extends TestThingThing{
+    //me testing out how deepCopies work
     double kloosh;
 
     public TestSubthing(double blam, double kloosh) {

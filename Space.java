@@ -26,29 +26,33 @@ class Space implements Cloneable{
         }
     }
 
+    //way to deep copy the space
     public Space clone() throws CloneNotSupportedException{
-        Space spaceCopy = (Space) super.clone();
+        Space spaceCopy = (Space) super.clone();//shallow copy of the space
 
-        if (this.getEntity() != null) {
-            spaceCopy.setEntity(this.getEntity().clone());
-        } else {
-            spaceCopy.setEntity(null);
+        if (this.getEntity() != null) { //if it has an entity:
+            spaceCopy.setEntity(this.getEntity().clone()); //copy it as well to achieve deep copy
+        } else { //if there is no entity:
+            spaceCopy.setEntity(null); //just set it to null
         }
         
-
-        return spaceCopy;
+        return spaceCopy; //return successfully deep copied space
     }
 
+    //quick and simple way to remove an entity from the space
     public void removeEntity() {
         entityInSpace = null;
     }
 
-    public void setEntity(Entity newEntity) {
-        entityInSpace = newEntity;
-    }
+    //getters and setters
+    public void setEntity(Entity newEntity) {entityInSpace = newEntity;}
+    public Entity getEntity() {return entityInSpace;}
+    public int getDamageNextTurn() {return damageNextTurn;}
+    public void setDamageNextTurn(int damageNextTurn) {this.damageNextTurn = damageNextTurn;}
 
-    public Entity getEntity() {
-        return entityInSpace;
+    //easier way to add/subtract from damageNextTurn
+    public void shiftDamageNextTurn(int shiftAmount) {
+        damageNextTurn += shiftAmount;
     }
 
     public boolean spaceIsWalkable() {

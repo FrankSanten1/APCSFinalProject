@@ -1,7 +1,7 @@
 class Entity implements Cloneable{
     private int maxHealth;
     private int health;
-    boolean blocksPathing;
+    private boolean blocksPathing;
 
     public Entity() {
         maxHealth = 1;
@@ -19,9 +19,11 @@ class Entity implements Cloneable{
         return "()";
     }
 
+    //copies the Entity, mostly just for ease of deep copying other things like space and board
     public Entity clone() throws CloneNotSupportedException {
-        Entity entityCopy = (Entity) super.clone();
-        return entityCopy;
+        Entity entityCopy = (Entity) super.clone(); //make a shallow copy, make sure to parse it as entity
+        return entityCopy; //return, nice and simple
+        //since entities don't have anything other than primitiveTypes, it works out
     }
 
     //getters
@@ -38,13 +40,15 @@ class Entity implements Cloneable{
     //the setters will be for simply setting an amount (if they are ever necesary), but this is what will be used commonly whenever health must be affected
     //so this will probably be overridden a lot if an enemy has something special happen when they take damage(for example if the enemy has armor, or if they don't take damage, etc) 
     public void affectHealth(int amount) {
-        health += amount;
-        if (health > maxHealth) {
+        health += amount; //add/subtract the amount
+
+        //make sure they don't have more health than max health, if so then make them even 
+        if (health > maxHealth) { 
             health = maxHealth;
         }
     }
 
-    //same for this
+    //same basic premise for affectMaxHealth as for affectHealth, could be overridden
     public void affectMaxHealth(int amount) {
         maxHealth += amount;
         health += amount; //make sure you increase health alongside max health

@@ -12,15 +12,20 @@ class Enemy extends Entity {
     //stores coordinates of places it will damage next turn
     private ArrayList<Point> placesToAttack;
 
+    //simple constructors
+    //complex:
     public Enemy(int maxHealth, int health, int attackPower) {
         super(maxHealth, health, true);
         this.attackPower = attackPower;
     }
 
+    //basic:
     public Enemy() {
         super(1, 1, true);
         this.attackPower = 1;
     }
+
+    
 
     //getters and setters for the attackPower stat
     public int getAttackPower() {return attackPower;}
