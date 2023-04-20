@@ -4,6 +4,11 @@ import java.awt.Point;
 
 class GameRunner {
     public static void main(String[] args) throws CloneNotSupportedException{
+
+        Board thingy = new Board(12, 8);
+        thingy.addEntityToSpace(new Entity(10, 10, true), 1, 1);
+        System.out.println(thingy.getSpace(1, 1).getEntity().findSelfCoords(thingy));
+        
         //throw new YouAreActualGarbageException("ur trash on godddddddddd");
         /* 
         Board thingy = new Board(12, 8);

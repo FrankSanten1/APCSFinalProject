@@ -68,6 +68,7 @@ class Board implements Cloneable{
     }
     
 
+    /* 
     public boolean canMoveEntity(int xPositionOfEntity, int yPositionOfEntity, int xMovement, int yMovement) {
         if (mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].spaceIsWalkable()) {
             return true;
@@ -80,6 +81,7 @@ class Board implements Cloneable{
         mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].setEntity(mainArray[yPositionOfEntity][xPositionOfEntity].getEntity());
         mainArray[yPositionOfEntity][xPositionOfEntity].removeEntity();
     }
+    */
 
     public Space getSpace(int xPosition, int yPosition) {
         return mainArray[yPosition][xPosition];
@@ -95,6 +97,10 @@ class Board implements Cloneable{
 
     public void addEntityToSpace(Entity entityToAdd, int xPosition, int yPosition) {
         mainArray[yPosition][xPosition].setEntity(entityToAdd);
+    }
+
+    public void removeEntityFromSpace(int xPosition, int yPosition) {
+        mainArray[yPosition][xPosition].removeEntity();
     }
 
     public Space getPlayerSpace() {
@@ -119,6 +125,7 @@ class Board implements Cloneable{
         return null;
     }
 
+    /*
     public boolean canMovePlayer(int xMovement, int yMovement) {
         Point playerCoords = getPlayerCoords();
         if (mainArray[playerCoords.y + yMovement][playerCoords.x + xMovement].spaceIsWalkable()) {
@@ -133,4 +140,5 @@ class Board implements Cloneable{
         mainArray[playerCoords.y + yMovement][playerCoords.x + xMovement].setEntity(mainArray[playerCoords.y][playerCoords.x].getEntity());
         mainArray[playerCoords.y][playerCoords.x].removeEntity();
     }
+    */
 }

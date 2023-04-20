@@ -42,7 +42,7 @@ class Enemy extends Entity {
     //returns an arrayList of places he moved, play through them for smooth animation
     //last board in the arrayList that was returned will be where the gameplay picks up next turn
     //need to work on a good pathing AI for this
-    public ArrayList<Board> move(Board currentSituation) {
+    public ArrayList<Board> moveStage(Board currentSituation) {
         ArrayList<Board> animations = new ArrayList<Board>();
         animations.add(currentSituation);
         return animations;
@@ -58,5 +58,15 @@ class Enemy extends Entity {
         animations.add(currentSituation);
         return animations;
         //b/c this is just the superclass, doesn't do anything. This will be overridden in the subclasses.
+    }
+
+    public Point findDirectionToPlayer(Board b) {
+        Point selfCoords = findSelfCoords(b);
+        Point playerCoords = b.getPlayerCoords();
+
+        Point direction = new Point();
+        direction.x = playerCoords.x - selfCoords.x;
+        direction.y = playerCoords.y - selfCoords.y;
+        return direction;
     }
 }
