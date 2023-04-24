@@ -5,6 +5,7 @@ public class Test {
     //this will probably be gone come the end of this project
     //hopefully i'll remember to remove it
     public static void main(String[] args) /*throws CloneNotSupportedException*/{
+        
         /* 
         TestThing a = new TestThing(1);
         System.out.println(a.getJig());

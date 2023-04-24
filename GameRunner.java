@@ -1,13 +1,19 @@
 import java.util.Scanner;
-
+import java.util.ArrayList;
 import java.awt.Point;
 
 class GameRunner {
     public static void main(String[] args) throws CloneNotSupportedException{
 
         Board thingy = new Board(12, 8);
-        thingy.addEntityToSpace(new Entity(10, 10, true), 1, 1);
-        System.out.println(thingy.getSpace(1, 1).getEntity().findSelfCoords(thingy));
+        PlayerStatsTracker stats = new PlayerStatsTracker(10, 10, 5, 5, null);
+        thingy.addEntityToSpace(new Swordsman(), 4, 6);
+        thingy.addEntityToSpace(new Player(stats), 1, 1);
+        thingy.printBoard();
+        ArrayList<Board> theList = ((Enemy) thingy.getSpace(4, 6).getEntity()).moveStage(thingy);
+        for (Board x : theList) {
+            x.printBoard();
+        }
         
         //throw new YouAreActualGarbageException("ur trash on godddddddddd");
         /* 

@@ -81,8 +81,9 @@ class Entity implements Cloneable{
     public Board move(Board b, Point direction) throws CloneNotSupportedException{
         Point selfCoords = findSelfCoords(b);
         b = b.clone();
-        b.addEntityToSpace(this, selfCoords.x, selfCoords.y);
         b.removeEntityFromSpace(selfCoords.x, selfCoords.y);
+        b.addEntityToSpace(this, selfCoords.x + direction.x, selfCoords.y + direction.y);
+        
 
         return b;
     }

@@ -42,7 +42,7 @@ class Enemy extends Entity {
     //returns an arrayList of places he moved, play through them for smooth animation
     //last board in the arrayList that was returned will be where the gameplay picks up next turn
     //need to work on a good pathing AI for this
-    public ArrayList<Board> moveStage(Board currentSituation) {
+    public ArrayList<Board> moveStage(Board currentSituation) throws CloneNotSupportedException {
         ArrayList<Board> animations = new ArrayList<Board>();
         animations.add(currentSituation);
         return animations;
@@ -63,10 +63,22 @@ class Enemy extends Entity {
     public Point findDirectionToPlayer(Board b) {
         Point selfCoords = findSelfCoords(b);
         Point playerCoords = b.getPlayerCoords();
+        //System.out.println(selfCoords);
+        //b.printBoard();
 
         Point direction = new Point();
         direction.x = playerCoords.x - selfCoords.x;
         direction.y = playerCoords.y - selfCoords.y;
         return direction;
+    }
+
+    public String healthToColor() {
+        double ratio = (double) this.getHealth() / this.getMaxHealth();
+        int num = (int) (ratio * 255);
+        return "\033[38;2;255;"+ num +";"+ num +"m";
+    }
+
+    public String toString() {
+        return healthToColor() + "!!";
     }
 }
