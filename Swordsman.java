@@ -1,15 +1,17 @@
 import java.util.ArrayList;
 import java.awt.Point;
+import java.awt.Color;
 
 public class Swordsman extends Enemy {
     
     public Swordsman() {
-        super(10, 10, 3);
+        super(12, 12, 3);
     }
 
     
     public ArrayList<Board> moveStage(Board currentSituation) throws CloneNotSupportedException{
         ArrayList<Board> animations = new ArrayList<Board>(); //will hold every step taken
+        setIsHighlighted(true);
         animations.add(currentSituation); //start with the beginning
         for (int i = 0; i < 3; i++) { //loop as many times as it will move
             //The direction to the player will be important for finding where to move
@@ -76,11 +78,92 @@ public class Swordsman extends Enemy {
             }
             //now, return back to the top of the for loop and potentially do it again
         }
+        //setIsHighlighted(false);
         //once all moves are done, return what happened
+        return animations;
+    }
+
+    public ArrayList<Board> setUpAttack(Board currentSituation) throws CloneNotSupportedException{
+        
+        ArrayList<Board> animations = new ArrayList<Board>();
+        setIsHighlighted(true);
+        setAttackPowerInstance(getAttackPower());
+        animations.add(currentSituation.clone());
+        ArrayList<Point> placesToAttack = new ArrayList<Point>();
+
+        Point selfCoords = findSelfCoords(currentSituation);
+        Point directionToPlayer = findDirectionToPlayer(currentSituation);
+
+        if (Math.abs(directionToPlayer.x) > Math.abs(directionToPlayer.y)) {
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1));
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
+            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y));
+        } else if (Math.abs(directionToPlayer.x) < Math.abs(directionToPlayer.y)) {
+            placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y));
+            placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
+        } else {
+            double rand = Math.random();
+            if (rand > 0.5) {
+                placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1));
+                placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
+                placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y));
+            } else {
+                placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y));
+                placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
+                placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
+            }
+        }
+        
+        setPlacesToAttack(placesToAttack);
+        currentSituation = currentSituation.clone();
+
+        for (Point x : placesToAttack) {
+            currentSituation.getSpace(x).shiftDamageNextTurn(getAttackPower());
+        }
+        Board temp = currentSituation.clone();
+        for (Point x : placesToAttack) {
+            temp.getSpace(x).setIsHighlighted(true);
+            if (temp.getSpace(x).getEntity() != null) {
+                temp.getSpace(x).getEntity().setColorOverride(new Color(255, 0, 255));
+            }
+        }
+        animations.add(temp);
+        animations.add(currentSituation.clone());
+        temp = currentSituation.clone();
+        ((Enemy)temp.getSpace(selfCoords).getEntity()).setIsHighlighted(false);
+        animations.add(temp);
+
+        return animations;
+    }
+
+    public ArrayList<Board> attack(Board currentSituation) throws CloneNotSupportedException{
+        ArrayList<Board> animations = new ArrayList<Board>();
+        setIsHighlighted(true);
+        animations.add(currentSituation.clone());
+        for (Point x : getPlacesToAttack()) {
+            currentSituation.getSpace(x).enemyAttacksHere(getAttackPowerInstance());
+            currentSituation.getSpace(x).shiftDamageNextTurn(-1 * getAttackPowerInstance());
+        }
+        Board temp = currentSituation.clone();
+        for (Point x : getPlacesToAttack()) {
+            temp.getSpace(x).setEntity(new CosmeticX(255, 0, 0));
+        }
+        animations.add(temp);
+        animations.add(currentSituation.clone());
+        setIsHighlighted(false);
+        animations.add(currentSituation);
+
         return animations;
     }
     
     public String toString() {
+        if (getColorOverride() != null) {
+            return colorOverrideToAnsi() + "{}";
+        }
+        if (getIsHighlighted()) {
+            return "\033[38;2;0;255;128m" + "{}";
+        }
         return this.healthToColor() + "{}";
     }
 }

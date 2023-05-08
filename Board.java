@@ -67,24 +67,11 @@ class Board implements Cloneable{
         mainArray[y][x] = newSpace;
     }
     
-
-    /* 
-    public boolean canMoveEntity(int xPositionOfEntity, int yPositionOfEntity, int xMovement, int yMovement) {
-        if (mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].spaceIsWalkable()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void moveEntity(int xPositionOfEntity, int yPositionOfEntity, int xMovement, int yMovement) {
-        mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].setEntity(mainArray[yPositionOfEntity][xPositionOfEntity].getEntity());
-        mainArray[yPositionOfEntity][xPositionOfEntity].removeEntity();
-    }
-    */
-
     public Space getSpace(int xPosition, int yPosition) {
         return mainArray[yPosition][xPosition];
+    }
+    public Space getSpace(Point position) {
+        return mainArray[position.y][position.x];
     }
 
     public Space[][] getMainArray() {
@@ -125,6 +112,48 @@ class Board implements Cloneable{
         return null;
     }
 
+    public boolean enemiesRemain() {
+        for (int i = 0; i < mainArray.length; i++) {
+            for (int j = 0; j < mainArray[0].length; j++) {
+                if (mainArray[i][j].getEntity() instanceof Enemy) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Point> findAllEnemyLocations() {
+        ArrayList<Point> coords = new ArrayList<Point>();
+        for (int i = 0; i < mainArray.length; i++) {
+            for (int j = 0; j < mainArray[0].length; j++) {
+                if (mainArray[i][j].getEntity() instanceof Enemy) {
+                    coords.add(new Point(j, i));
+                }
+            }
+        }
+        return coords;
+    }
+
+    public void cleanDeadEntities() {
+        for (int i = 0; i < mainArray.length; i++) {
+            for (int j = 0; j < mainArray[0].length; j++) {
+                if (mainArray[i][j].getEntity() instanceof Entity) {
+                    if (!(mainArray[i][j].getEntity() instanceof Player)) {
+                        if (mainArray[i][j].getEntity().getHealth() <= 0) {
+                            ArrayList<Point> coords = ((Enemy) mainArray[i][j].getEntity()).getPlacesToAttack();
+                            for (Point p : coords) {
+                                getSpace(p).shiftDamageNextTurn(((Enemy) mainArray[i][j].getEntity()).getAttackPowerInstance() * -1);
+                            }
+                            mainArray[i][j].removeEntity();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //methods that didn't end up being used, here just in case I need them later
     /*
     public boolean canMovePlayer(int xMovement, int yMovement) {
         Point playerCoords = getPlayerCoords();
@@ -139,6 +168,20 @@ class Board implements Cloneable{
         Point playerCoords = getPlayerCoords();
         mainArray[playerCoords.y + yMovement][playerCoords.x + xMovement].setEntity(mainArray[playerCoords.y][playerCoords.x].getEntity());
         mainArray[playerCoords.y][playerCoords.x].removeEntity();
+    }
+    */
+    /* 
+    public boolean canMoveEntity(int xPositionOfEntity, int yPositionOfEntity, int xMovement, int yMovement) {
+        if (mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].spaceIsWalkable()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void moveEntity(int xPositionOfEntity, int yPositionOfEntity, int xMovement, int yMovement) {
+        mainArray[yPositionOfEntity + yMovement][xPositionOfEntity + xMovement].setEntity(mainArray[yPositionOfEntity][xPositionOfEntity].getEntity());
+        mainArray[yPositionOfEntity][xPositionOfEntity].removeEntity();
     }
     */
 }

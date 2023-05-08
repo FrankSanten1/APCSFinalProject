@@ -6,11 +6,18 @@ class Enemy extends Entity {
     //objects of this won't eb created, but objects its subclasses will be
     //polymorphism poggers
 
+    //cosmetic: draws attention to enemy when it is acting
+    private boolean isHighlighted;
+
     //how much damage it will do
     private int attackPower;
 
     //stores coordinates of places it will damage next turn
     private ArrayList<Point> placesToAttack;
+
+    //how much attack they had when they set up their attack
+    private int attackPowerInstance;
+    //so that alchemist doesn't buff an enemy you thought was going to leave you at 1hp, that seems like some bull
 
     //simple constructors
     //complex:
@@ -27,14 +34,23 @@ class Enemy extends Entity {
 
     
 
-    //getters and setters for the attackPower stat
+    //getters and setters
     public int getAttackPower() {return attackPower;}
     public void setAttackPower(int attackPower) {this.attackPower = attackPower;}
+    public int getAttackPowerInstance() {return attackPowerInstance;}
+    public void setAttackPowerInstance(int attackPowerInstance) {this.attackPowerInstance = attackPowerInstance;}
+    public boolean getIsHighlighted() {return isHighlighted;}
+    public void setIsHighlighted(boolean isHighlighted) {this.isHighlighted = isHighlighted;}
+    public ArrayList<Point> getPlacesToAttack() {return placesToAttack;}
+    public void setPlacesToAttack(ArrayList<Point> placesToAttack) {this.placesToAttack = placesToAttack;}
+
 
     //Takes in the current board, chooses places to attack next turn
     //Increases damageNextTurn on relevant spaces and placesToAttack for this object, returns modified board
-    public Board setUpAttack(Board currentSituation) {
-        return currentSituation;
+    public ArrayList<Board> setUpAttack(Board currentSituation) throws CloneNotSupportedException{
+        ArrayList<Board> animations = new ArrayList<Board>();
+        animations.add(currentSituation);
+        return animations;
         //b/c this is just the superclass, doesn't do anything. This will be overridden in the subclasses.
     }
 
@@ -53,11 +69,21 @@ class Enemy extends Entity {
     //damages all tiles in the placesToAttack arrayList, reduces the damage indicators on the spaces there as well
     //returns an arrayList of animations just in case I want it to look pretty later
     //last board in the arrayList that was returned will be where the gameplay picks up next turn
-    public ArrayList<Board> attack(Board currentSituation) {
+    public ArrayList<Board> attack(Board currentSituation) throws CloneNotSupportedException{
         ArrayList<Board> animations = new ArrayList<Board>();
         animations.add(currentSituation);
         return animations;
         //b/c this is just the superclass, doesn't do anything. This will be overridden in the subclasses.
+    }
+
+    public ArrayList<Board> moveAndSetUpAttack(Board currentSituation) throws CloneNotSupportedException{
+        ArrayList<Board> moveFrames = moveStage(currentSituation);
+        ArrayList<Board> attackFrames = setUpAttack(moveFrames.get(moveFrames.size()-1));
+        attackFrames.remove(0);
+        for (Board x : attackFrames) {
+            moveFrames.add(x);
+        }
+        return moveFrames;
     }
 
     public Point findDirectionToPlayer(Board b) {
@@ -79,6 +105,10 @@ class Enemy extends Entity {
     }
 
     public String toString() {
+        if (getColorOverride() != null) {
+            return colorOverrideToAnsi() + "!!";
+        }
         return healthToColor() + "!!";
     }
+
 }

@@ -13,6 +13,12 @@ public class CosmeticX extends Entity{
         blue = 255;
     }
 
+    public CosmeticX(int red, int green, int blue) {
+        this.red = red;
+        this.blue = blue;
+        this.green = green;
+    }
+
     //getters and setters:
     public int getRed() {return red;}
     public int getGreen() {return green;}

@@ -1,9 +1,11 @@
 import java.awt.Point;
+import java.awt.Color;
 
 class Entity implements Cloneable{
     private int maxHealth;
     private int health;
     private boolean blocksPathing;
+    private Color colorOverride = null;
 
     public Entity() {
         maxHealth = 1;
@@ -18,6 +20,9 @@ class Entity implements Cloneable{
     }
 
     public String toString() {
+        if (colorOverride != null) {
+            return colorOverrideToAnsi() + "()";
+        }
         return "()";
     }
 
@@ -32,11 +37,13 @@ class Entity implements Cloneable{
     public int getMaxHealth() {return maxHealth;}
     public int getHealth() {return health;}
     public boolean getIfBlocksPathing() {return blocksPathing;}
+    public Color getColorOverride() {return colorOverride;}
 
     //setters
     public void setMaxHealth(int maxHealth) {this.maxHealth = maxHealth;}
     public void setHealth(int health) {this.health = health;}
     public void setIfBlocksPathing(boolean blocksPathing) {this.blocksPathing = blocksPathing;}
+    public void setColorOverride(Color colorOverride) {this.colorOverride = colorOverride;}
 
     //This will be the main method for changing health of entities
     //the setters will be for simply setting an amount (if they are ever necesary), but this is what will be used commonly whenever health must be affected
@@ -84,7 +91,10 @@ class Entity implements Cloneable{
         b.removeEntityFromSpace(selfCoords.x, selfCoords.y);
         b.addEntityToSpace(this, selfCoords.x + direction.x, selfCoords.y + direction.y);
         
-
         return b;
+    }
+
+    public String colorOverrideToAnsi() {
+        return "\033[38;2;"+ colorOverride.getRed() +";"+ colorOverride.getGreen() +";"+ colorOverride.getBlue() +"m";
     }
 }

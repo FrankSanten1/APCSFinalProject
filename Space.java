@@ -8,6 +8,9 @@ class Space implements Cloneable{
     //well, techmically the damage won't be done to enemies. ok rephrase: damage dealt by enemies to the player and anything it spawns
     private int damageNextTurn;
 
+    //for cosmetic purposes
+    private boolean isHighlighted;
+
     public Space() {
         entityInSpace = null;
         damageNextTurn = 0;
@@ -20,6 +23,12 @@ class Space implements Cloneable{
 
     public String toString() {
         if (entityInSpace == null) {
+            if (isHighlighted) {
+                return "\033[38;2;255;0;255m" + "<>";
+            }
+            if (damageNextTurn > 0) {
+                return "\033[38;2;128;0;128m" + "<>";
+            }
             return "\033[38;2;0;0;0m" + "<>";
         } else {
             return entityInSpace.toString();
@@ -49,10 +58,20 @@ class Space implements Cloneable{
     public Entity getEntity() {return entityInSpace;}
     public int getDamageNextTurn() {return damageNextTurn;}
     public void setDamageNextTurn(int damageNextTurn) {this.damageNextTurn = damageNextTurn;}
+    public boolean getIsHighlighted() {return isHighlighted;}
+    public void setIsHighlighted(boolean isHighlighted) {this.isHighlighted = isHighlighted;}
 
     //easier way to add/subtract from damageNextTurn
     public void shiftDamageNextTurn(int shiftAmount) {
         damageNextTurn += shiftAmount;
+
+        if (entityInSpace instanceof Player) {
+            if (damageNextTurn == 0) {
+                ((Player) entityInSpace).setInDanger(false);
+            } else {
+                ((Player) entityInSpace).setInDanger(true);
+            }
+        }
     }
 
     public boolean spaceIsWalkable() {
@@ -62,6 +81,20 @@ class Space implements Cloneable{
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void damageEntityHere(int damage) {
+        if (entityInSpace != null) {
+            entityInSpace.affectHealth(-1 * damage);
+        }
+    }
+
+    public void enemyAttacksHere(int damage) {
+        if (entityInSpace != null) {
+            if (!(entityInSpace instanceof Enemy)) { //shouldn't damage other enemies
+                entityInSpace.affectHealth(-1 * damage);
+            }
         }
     }
 }
