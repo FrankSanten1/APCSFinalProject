@@ -38,4 +38,9 @@ public class CosmeticX extends Entity{
     public String toString() {
         return ansiColorCode() + "XX";
     }
+
+    //this is just here in case. it should never pop up without a major bug happening. 
+    public String inspect() {
+        return "CosmeticX\nHealth: \033[38;2;255;0;0mUnknown\033[38;2;255;255;255m\nIf this message is popping up, I goofed up the code somewhere.";
+    }
 }

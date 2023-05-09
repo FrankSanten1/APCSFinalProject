@@ -59,4 +59,9 @@ public class Player extends Entity{
 
         return b;
     }
+
+    //returns a description of how the player's doing
+    public String inspect() {
+        return "Player\nHealth: \033[38;2;255;0;0m" + getHealth() + "/" + getMaxHealth() + "\033[38;2;255;255;255m\nIt's you!";
+    }
 }

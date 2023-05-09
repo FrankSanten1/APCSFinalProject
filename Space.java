@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 class Space implements Cloneable{
     //each object of this class represents a tile in the playing field
 
@@ -11,6 +13,10 @@ class Space implements Cloneable{
     //for cosmetic purposes
     //if a space is highlighted, it shines brighter momentarily
     private boolean isHighlighted;
+
+    //different kind of highlight
+    //it's way too late in the night to be overhauling this ragtag highlight system, but i ought to make it more robust once I have the time
+    private boolean isBeingInspected;
 
     //simple constructor
     public Space() {
@@ -26,6 +32,9 @@ class Space implements Cloneable{
     //toString is a bit more complex than normal
     public String toString() {
         if (entityInSpace == null) { //if there is no entity in the space: make it look like <>
+            if (isBeingInspected) { //if it's being inspected:
+                return "\033[38;2;0;255;0m" + "<>"; //make it look green
+            }
             if (isHighlighted) { //if it's highlighted (probably to indicate that an enemy has just set up an attack against it)
                 return "\033[38;2;255;0;255m" + "<>"; //make it bright purple
             }
@@ -64,6 +73,25 @@ class Space implements Cloneable{
     public void setDamageNextTurn(int damageNextTurn) {this.damageNextTurn = damageNextTurn;}
     public boolean getIsHighlighted() {return isHighlighted;}
     public void setIsHighlighted(boolean isHighlighted) {this.isHighlighted = isHighlighted;}
+    public boolean getIsBeingInspected() {return isBeingInspected;}
+    public void setIsBeingInspected(boolean isBeingInspected) {this.isBeingInspected = isBeingInspected;}
+
+    //ah, these two methods
+    //a nice bandaid fix to a problem that I will be fixing later
+    //and by later, I mean after I submit this final project, because for now it works well enough
+    //the first of these methods make everything in the square green, and then the other sets it back to normal
+    public void makeInspectingColor() {
+        setIsBeingInspected(true);
+        if (entityInSpace != null) {
+            entityInSpace.setColorOverride(new Color(0, 255, 0));
+        }
+    }
+    public void clearInspectingColor() {
+        setIsBeingInspected(false);
+        if (entityInSpace != null) {
+            entityInSpace.setColorOverride(null);
+        }
+    }
 
     //way to add/subtract from damageNextTurn while updating the player's inDanger state
     public void shiftDamageNextTurn(int shiftAmount) {
@@ -108,6 +136,16 @@ class Space implements Cloneable{
             }
         }
     } 
+
+    //returns a description of what's happening in that space
+    public String inspect() {
+        if (entityInSpace == null) { //if there is no entity in the space: 
+            //just say it's empty and say how much damage you'll take there if you stand there
+            return "This space is empty. \nAt the end of this turn, this space will cause any non-enemy entity within it to recieve " + damageNextTurn + " damage.";
+        }
+        //if there is an entity in the space:
+        return entityInSpace.inspect(); //pass on the responsibility to them to describe themselves
+    }
 }
 
 //Hi Mr. J! If you see this, that means that you have to drink some water. now. this is an order. drink some water right now or I will know.  

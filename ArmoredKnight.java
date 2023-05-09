@@ -2,22 +2,23 @@ import java.util.ArrayList;
 import java.awt.Point;
 import java.awt.Color;
 
-public class Swordsman extends Enemy {
-    //Swordsmen: the most basic of basic enemies
-    //they are quite weak, deal little damage, and do not deal it in much of a radius
-    //basic fodder
-
-    public Swordsman() {
-        super(12, 12, 3);
+public class ArmoredKnight extends Enemy{
+    //basically a slightly buffed swordsman
+    //many of the methods are just copied over and slightly modified
+    //much healthier, slightly more damage, more area attacked, slower
+    
+    public ArmoredKnight() {
+        super(20, 20, 4);
     }
 
     //this is called whenever the enemy enters the stage when it moves towards the player
-    //swordsmen move three times
+    //armored knights move 2 times
+    //basically copied from Swordsman, it's just the for loop goes one less time
     public ArrayList<Board> moveStage(Board currentSituation) throws CloneNotSupportedException{
         ArrayList<Board> animations = new ArrayList<Board>(); //will hold every step taken
         setIsHighlighted(true);
         animations.add(currentSituation); //start with the beginning
-        for (int i = 0; i < 3; i++) { //loop as many times as it will move
+        for (int i = 0; i < 2; i++) { //loop as many times as it will move
             //The direction to the player will be important for finding where to move
             Point directionToPlayer = findDirectionToPlayer(animations.get(animations.size()-1));
             //the direction desired is just the direction to the player, but each direction will be a max of 1
@@ -88,8 +89,8 @@ public class Swordsman extends Enemy {
 
     //this runs whenever an enemy is setting up where they will attack for next turn
     //usually right after moveStage
-    //the swordsman attacks the time closest to the player as well as tiles to the side of it that are diagonal to that first one
-    //basically attacks all 4 tiles around it except for the one furthest from the player
+    //the armored knight attacks the five tiles in a u-shape that are closest to the player
+    //very similar to swordsman attack, slightly modified area
     public ArrayList<Board> setUpAttack(Board currentSituation) throws CloneNotSupportedException{
         
         ArrayList<Board> animations = new ArrayList<Board>(); //of course, make the animations arrayList
@@ -105,21 +106,29 @@ public class Swordsman extends Enemy {
         if (Math.abs(directionToPlayer.x) > Math.abs(directionToPlayer.y)) { //if the player is mostly towards a horizontal direction: 
             placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1)); //add the points one above and below to the placesToAttack
             placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
-            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y)); //add the tile that is in the direction of the player
+            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y)); //add three tiles that are in the direction of the player
+            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y + 1));
+            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y - 1));
         } else if (Math.abs(directionToPlayer.x) < Math.abs(directionToPlayer.y)) { //if the player is mostly towards a vertical direction:
             placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y)); //add both horizontal points
             placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
-            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y)))); //add the vertical point that is towards the player
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y)))); //add three tiles that are in the direction of the player, vertical this time
+            placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
+            placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
         } else { //if neither x nor y is bigger: 
             double rand = Math.random(); //randomize it
             if (rand > 0.5) { //half chance it attacks horizontally
                 placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1)); //works same as above
                 placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
                 placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y));
+                placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y + 1));
+                placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y - 1));
             } else { //half chance it attacks vertically
                 placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y)); //works same as above
                 placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
                 placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
+                placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
+                placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
             }
         }
         
@@ -147,6 +156,7 @@ public class Swordsman extends Enemy {
 
     //damages all the points that it selected to damage last round
     //honestly this would be a method in Enemy, but I want to make some enemies have more unique attack animations later on
+    //again, this method is shamelessly ripped straight from the swordsman class, you should really just read  that one first honestly
     public ArrayList<Board> attack(Board currentSituation) throws CloneNotSupportedException{
         ArrayList<Board> animations = new ArrayList<Board>(); //of course, the animations list
         setIsHighlighted(true); //highlight the guy who's attacking
@@ -166,21 +176,21 @@ public class Swordsman extends Enemy {
 
         return animations; //yayyyyy
     }
-    
+
     //simple toString
-    //swordsmen are {}. colored appropriately. 
+    //armored knights are ||. colored appropriately. 
     public String toString() {
         if (getColorOverride() != null) { //if you have a color override: 
-            return colorOverrideToAnsi() + "{}"; //use it
+            return colorOverrideToAnsi() + "||"; //use it
         }
         if (getIsHighlighted()) { //if it's supposed to be highlighted: 
-            return "\033[38;2;0;255;128m" + "{}"; //highlight it
+            return "\033[38;2;0;255;128m" + "||"; //highlight it
         } //otherwise: 
-        return this.healthToColor() + "{}"; //just use standard color for the health this guy's at
+        return this.healthToColor() + "||"; //just use standard color for the health this guy's at
     }
 
-    //returns a description of this swordsman
+    //give info on the armored knight
     public String inspect() {
-        return "Swordsman\nHealth: \033[38;2;255;0;0m" + getHealth() + "/" + getMaxHealth() + "\033[38;2;255;255;255m\nDamage: \033[38;2;255;0;255m"+ getAttackPower() +"\033[38;2;255;255;255m\nMoves three tiles towards the player, then attacks three tiles around itself. \nGenerally weak.";
+        return "Armored Knight\nHealth: \033[38;2;255;0;0m" + getHealth() + "/" + getMaxHealth() + "\033[38;2;255;255;255m\nDamage: \033[38;2;255;0;255m"+ getAttackPower() +"\033[38;2;255;255;255m\nMoves two tiles towards you, then attacks five tiles around itself. \nThis swordsman got their hands on plate armor and a saber. Generally more dangerous than your common foe.";
     }
 }

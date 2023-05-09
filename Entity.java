@@ -113,4 +113,9 @@ class Entity implements Cloneable{
     public String colorOverrideToAnsi() {
         return "\033[38;2;"+ colorOverride.getRed() +";"+ colorOverride.getGreen() +";"+ colorOverride.getBlue() +"m";
     }
+
+    //shows information about this entity
+    public String inspect() {
+        return "Entity\nHealth: \033[38;2;255;0;0m" + health + "/" + maxHealth + "\033[38;2;255;255;255m\nIf this message is popping up, I goofed up the code somewhere.";
+    }
 }

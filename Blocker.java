@@ -19,6 +19,14 @@ public class Blocker extends Entity{
     }
 
     public String toString() {
+        if (getColorOverride() != null) { //if there is a colorOverride:
+            return colorOverrideToAnsi() + "##"; //change color to that
+        }
         return "\033[38;2;170;170;170m" + "##"; //white hashtags
+    }
+
+    //give info on the blocker
+    public String inspect() {
+        return "Blocker\nHealth: \033[38;2;255;0;0mInfinite\033[38;2;255;255;255m\nMarks the edge of the board. Impassable.";
     }
 }

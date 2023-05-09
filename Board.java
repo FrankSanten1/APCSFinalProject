@@ -31,6 +31,7 @@ class Board implements Cloneable{
         
     }
 
+    //prints out the board in an aesthetically pleasing way
     public void printBoard() {
         //just print out every space
         for (Space[] x : mainArray) {
@@ -42,7 +43,7 @@ class Board implements Cloneable{
         System.out.print("\033[38;2;255;255;255m"); //make all text after it white
     }
 
-    
+    //creates a deep copy of the board
     public Board clone() throws CloneNotSupportedException{
         //makes a deep copy of the current board
         //useful when taking a snapshot in time of a board that should not change when that other board is changed
@@ -125,6 +126,11 @@ class Board implements Cloneable{
 
     //returns true if there are enemies left, false if otherwise
     public boolean enemiesRemain() {
+        //ha ha! you thought it was going to be a sensible, regular method done in a reasonable way? fool!
+        //it is I: the required use of recursion! look upon my diificult-to-understand structure, ye mighty, and despair!
+        return enemiesRemainRecursion(0);
+        //here, below, you see the deceased corpse of a perfectly good method, replaced because of government mandated recursion minimums
+        /* 
         for (int i = 0; i < mainArray.length; i++) { //loop through all of the mainArray
             for (int j = 0; j < mainArray[0].length; j++) {
                 if (mainArray[i][j].getEntity() instanceof Enemy) { //if an enemy is found:
@@ -133,7 +139,24 @@ class Board implements Cloneable{
             }
         }
         return false; //if you go through the entire array without finding enemies, there are no more enemies. 
+        */
     }
+
+    //RECURSION BAYBEEEEEE
+    //this is the only place it shows up in this entire thing
+    public boolean enemiesRemainRecursion(int index) {
+        if (index >= mainArray.length) { //base case: if the index gets farther than the array without returning true by finding an enemy: 
+            return false; //return false all the way up the chain
+        }
+        for (int j = 0; j < mainArray[0].length; j++) { //loop through one row of the array at the specified index
+            if (mainArray[index][j].getEntity() instanceof Enemy) { //if an enemy is found:
+                return true; //return true all the way up the chain
+            }
+        }
+        return enemiesRemainRecursion(index + 1); //if there were no enemies found and it wasn't the base case yet: try the next row. maybe there'll be an enemy there
+    }
+    //this is literally the last thing I added to this project because I hate recursion so much
+    //i'll probably change a bit tomorrow after getting friends to bug test this for me, but this is the last method i wrote
 
     //finds the locations of every enemy on the board, and returns an arrayList of their coordinates
     public ArrayList<Point> findAllEnemyLocations() {

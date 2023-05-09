@@ -117,4 +117,9 @@ class Enemy extends Entity {
         return healthToColor() + "!!"; //if no color override, just do standard color for this amount of health        
     }
 
+    //shows information about this enemy
+    public String inspect() {
+        return "Enemy\nHealth: \033[38;2;255;0;0m" + getHealth() + "/" + getMaxHealth() + "\033[38;2;255;255;255m\nIf this message is popping up, I goofed up the code somewhere.";
+    }
+
 }
