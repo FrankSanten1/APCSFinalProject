@@ -3,7 +3,7 @@ import java.awt.Point;
 
 class Enemy extends Entity {
     //This will be the superclass of all enemies
-    //objects of this won't eb created, but objects its subclasses will be
+    //objects of this won't be created, but objects its subclasses will be
     //polymorphism poggers
 
     //cosmetic: draws attention to enemy when it is acting
@@ -76,39 +76,45 @@ class Enemy extends Entity {
         //b/c this is just the superclass, doesn't do anything. This will be overridden in the subclasses.
     }
 
+    //since the move and setUpAttack commands are almost always used in tandem, i decided to make a method that does that easier
     public ArrayList<Board> moveAndSetUpAttack(Board currentSituation) throws CloneNotSupportedException{
-        ArrayList<Board> moveFrames = moveStage(currentSituation);
-        ArrayList<Board> attackFrames = setUpAttack(moveFrames.get(moveFrames.size()-1));
-        attackFrames.remove(0);
-        for (Board x : attackFrames) {
-            moveFrames.add(x);
+        ArrayList<Board> moveFrames = moveStage(currentSituation); //gets all the animations from moving
+        ArrayList<Board> attackFrames = setUpAttack(moveFrames.get(moveFrames.size()-1)); //gets all the animations from setting up an attack after moving
+        attackFrames.remove(0); //there's one dead frame that comes from attack that just becomes redundant when combined with the dead frame at the end of moveFrames, so it's getting removed
+        for (Board x : attackFrames) { //loop through all the remaining attackFrames
+            moveFrames.add(x); //add them to moveFrames
         }
-        return moveFrames;
+        return moveFrames; //return moveFrames, newly combined with attackFrames
     }
 
+    //finds the amount of x/y distance from the player that this enemy is, and returns it in point form as if the enemy was at the origin of a graph and the player was the point
     public Point findDirectionToPlayer(Board b) {
-        Point selfCoords = findSelfCoords(b);
-        Point playerCoords = b.getPlayerCoords();
-        //System.out.println(selfCoords);
-        //b.printBoard();
+        Point selfCoords = findSelfCoords(b); //find the enemy's coords
+        Point playerCoords = b.getPlayerCoords(); //find the player's coords
 
-        Point direction = new Point();
-        direction.x = playerCoords.x - selfCoords.x;
-        direction.y = playerCoords.y - selfCoords.y;
-        return direction;
+        Point direction = new Point(); //make a point
+        //now, the point's x/y values will be set so that they are the distance from the enemy to the player
+        direction.x = playerCoords.x - selfCoords.x; //set X value 
+        direction.y = playerCoords.y - selfCoords.y; //set Y value
+        return direction; //return that bad boy
     }
 
+    //the enemies grow more and more red the more damaged they are
+    //this returns the ANSI escape code that corresponds to how red they should be based off their health
     public String healthToColor() {
-        double ratio = (double) this.getHealth() / this.getMaxHealth();
-        int num = (int) (ratio * 255);
-        return "\033[38;2;255;"+ num +";"+ num +"m";
+        double ratio = (double) this.getHealth() / this.getMaxHealth(); //decomal value of their percentage of health remaining
+        int num = (int) (ratio * 255); //multiply ratio by 255, making it 255 if health is max and 0 if health is minimum
+        return "\033[38;2;255;"+ num +";"+ num +"m"; //make all color values other than red slowly recede as health is lower
     }
 
+    //wow a toString
+    //prints the model desired in the color that is appropriate
+    //will be overridden in all other classes
     public String toString() {
-        if (getColorOverride() != null) {
-            return colorOverrideToAnsi() + "!!";
+        if (getColorOverride() != null) { //if there is a colorOverride:
+            return colorOverrideToAnsi() + "!!"; //change color to that
         }
-        return healthToColor() + "!!";
+        return healthToColor() + "!!"; //if no color override, just do standard color for this amount of health        
     }
 
 }

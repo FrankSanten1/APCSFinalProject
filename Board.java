@@ -63,10 +63,13 @@ class Board implements Cloneable{
         return boardCopy;
     }
 
+    //sets the space at those coords to the space specified
     public void setSpaceAt(Space newSpace, int y, int x) {
         mainArray[y][x] = newSpace;
     }
     
+    //returns the space at those coords. There's an x/y version and a Point version
+    //i like the Point class. it's quite useful.
     public Space getSpace(int xPosition, int yPosition) {
         return mainArray[yPosition][xPosition];
     }
@@ -74,86 +77,105 @@ class Board implements Cloneable{
         return mainArray[position.y][position.x];
     }
 
+    //returns the array of spaces in this class
     public Space[][] getMainArray() {
         return mainArray;
     }
 
+    //sets the array of spaces to a new one
+    //unsure if I'll ever use this, since I can just make a new board, but it doesn't harm anything
     public void setMainArray(Space[][] mainArray) {
         this.mainArray = mainArray;
     }
 
+    //adds an entity to a specified space on the board
     public void addEntityToSpace(Entity entityToAdd, int xPosition, int yPosition) {
         mainArray[yPosition][xPosition].setEntity(entityToAdd);
     }
 
+    //removes an entity, if there is one, from a space on the board
     public void removeEntityFromSpace(int xPosition, int yPosition) {
         mainArray[yPosition][xPosition].removeEntity();
     }
 
+    //finds the space that the player is in, and returns it
     public Space getPlayerSpace() {
-        for (int i = 0; i < mainArray.length; i++) {
+        for (int i = 0; i < mainArray.length; i++) { //loop through all of the mainArray
             for (int j = 0; j < mainArray[0].length; j++) {
-                if (mainArray[i][j].getEntity() instanceof Player) {
-                    return mainArray[i][j];
+                if (mainArray[i][j].getEntity() instanceof Player) { //the first time you see an entity that is a player:
+                    return mainArray[i][j]; //return the space there
                 }
             }
         }
         return null;
     }
+    //theoretically, there is always exactly one player, so this should work in any scenario. 
 
+    //finds the space that the player is in, and returns its coordinates. 
     public Point getPlayerCoords() {
-        for (int i = 0; i < mainArray.length; i++) {
+        for (int i = 0; i < mainArray.length; i++) { //loop through all of the mainArray
             for (int j = 0; j < mainArray[0].length; j++) {
-                if (mainArray[i][j].getEntity() instanceof Player) {
-                    return new Point(j, i);
+                if (mainArray[i][j].getEntity() instanceof Player) { //first time you see a player
+                    return new Point(j, i); //return its coords
                 }
             }
         }
         return null;
     }
 
+    //returns true if there are enemies left, false if otherwise
     public boolean enemiesRemain() {
-        for (int i = 0; i < mainArray.length; i++) {
+        for (int i = 0; i < mainArray.length; i++) { //loop through all of the mainArray
             for (int j = 0; j < mainArray[0].length; j++) {
-                if (mainArray[i][j].getEntity() instanceof Enemy) {
-                    return true;
+                if (mainArray[i][j].getEntity() instanceof Enemy) { //if an enemy is found:
+                    return true; //then say that there are still enemies remaining
                 }
             }
         }
-        return false;
+        return false; //if you go through the entire array without finding enemies, there are no more enemies. 
     }
 
+    //finds the locations of every enemy on the board, and returns an arrayList of their coordinates
     public ArrayList<Point> findAllEnemyLocations() {
-        ArrayList<Point> coords = new ArrayList<Point>();
-        for (int i = 0; i < mainArray.length; i++) {
+        ArrayList<Point> coords = new ArrayList<Point>(); //create an arrayList
+        for (int i = 0; i < mainArray.length; i++) { //loop through the entire array
             for (int j = 0; j < mainArray[0].length; j++) {
-                if (mainArray[i][j].getEntity() instanceof Enemy) {
-                    coords.add(new Point(j, i));
+                if (mainArray[i][j].getEntity() instanceof Enemy) { //if an enemy is found:
+                    coords.add(new Point(j, i)); //add its coords to the arrayList
                 }
             }
         }
-        return coords;
+        return coords; //return all the coords of the enemies found
     }
 
+    //this method removes entities that have died from the board
+    //it ignores the player, as the player has a special case for when they die
     public void cleanDeadEntities() {
-        for (int i = 0; i < mainArray.length; i++) {
+        for (int i = 0; i < mainArray.length; i++) { //loop through all of the mainArray
             for (int j = 0; j < mainArray[0].length; j++) {
-                if (mainArray[i][j].getEntity() instanceof Entity) {
-                    if (!(mainArray[i][j].getEntity() instanceof Player)) {
-                        if (mainArray[i][j].getEntity().getHealth() <= 0) {
-                            ArrayList<Point> coords = ((Enemy) mainArray[i][j].getEntity()).getPlacesToAttack();
-                            for (Point p : coords) {
-                                getSpace(p).shiftDamageNextTurn(((Enemy) mainArray[i][j].getEntity()).getAttackPowerInstance() * -1);
+                if (mainArray[i][j].getEntity() instanceof Entity) { //if there's an entity there
+                    if (!(mainArray[i][j].getEntity() instanceof Player)) { //if it's not the player
+                        if (mainArray[i][j].getEntity().getHealth() <= 0) { //if they should be dead
+                            //they shall be removed!
+                            if (mainArray[i][j].getEntity() instanceof Enemy) { //if they're an enemy, you gotta remove any attack indicators from tiles they were attacking
+                                ArrayList<Point> coords = ((Enemy) mainArray[i][j].getEntity()).getPlacesToAttack(); //get all the places they were gonna attack
+                                if (coords != null) { //make sure that the list of coords isn't null before proceeding
+                                    for (Point p : coords) { //loop through the list of coords they indicated they were to attack
+                                        getSpace(p).shiftDamageNextTurn(((Enemy) mainArray[i][j].getEntity()).getAttackPowerInstance() * -1); //remove the damageNextTurn indicators that they caused, since they're dead now
+                                    }
+                                }
                             }
-                            mainArray[i][j].removeEntity();
+                            mainArray[i][j].removeEntity(); //and of course, remember to remove the entity
                         }
                     }
                 }
             }
         }
     }
+    //excellent triangle of code, i must say
 
     //methods that didn't end up being used, here just in case I need them later
+    //feel free to ignore this part, none of it matters anymore
     /*
     public boolean canMovePlayer(int xMovement, int yMovement) {
         Point playerCoords = getPlayerCoords();

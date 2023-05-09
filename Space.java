@@ -9,29 +9,33 @@ class Space implements Cloneable{
     private int damageNextTurn;
 
     //for cosmetic purposes
+    //if a space is highlighted, it shines brighter momentarily
     private boolean isHighlighted;
 
+    //simple constructor
     public Space() {
         entityInSpace = null;
         damageNextTurn = 0;
     }
-
+    //constructor that pre-bakes in an entity into the space when it's made
     public Space(Entity entityInSpace) {
         this.entityInSpace = entityInSpace;
         damageNextTurn = 0;
     }
 
+    //toString is a bit more complex than normal
     public String toString() {
-        if (entityInSpace == null) {
-            if (isHighlighted) {
-                return "\033[38;2;255;0;255m" + "<>";
+        if (entityInSpace == null) { //if there is no entity in the space: make it look like <>
+            if (isHighlighted) { //if it's highlighted (probably to indicate that an enemy has just set up an attack against it)
+                return "\033[38;2;255;0;255m" + "<>"; //make it bright purple
             }
-            if (damageNextTurn > 0) {
-                return "\033[38;2;128;0;128m" + "<>";
+            if (damageNextTurn > 0) { //if not highlighted but still in danger next turn:
+                return "\033[38;2;128;0;128m" + "<>"; //less harsh purple
             }
-            return "\033[38;2;0;0;0m" + "<>";
-        } else {
-            return entityInSpace.toString();
+            //if not in danger whatsoever
+            return "\033[38;2;0;0;0m" + "<>"; //dark grey
+        } else { //if there is an entity in the space:
+            return entityInSpace.toString(); //return what that entity should look like
         }
     }
 
@@ -61,40 +65,53 @@ class Space implements Cloneable{
     public boolean getIsHighlighted() {return isHighlighted;}
     public void setIsHighlighted(boolean isHighlighted) {this.isHighlighted = isHighlighted;}
 
-    //easier way to add/subtract from damageNextTurn
+    //way to add/subtract from damageNextTurn while updating the player's inDanger state
     public void shiftDamageNextTurn(int shiftAmount) {
-        damageNextTurn += shiftAmount;
+        damageNextTurn += shiftAmount; //of course, do the action necesary
 
-        if (entityInSpace instanceof Player) {
-            if (damageNextTurn == 0) {
-                ((Player) entityInSpace).setInDanger(false);
-            } else {
-                ((Player) entityInSpace).setInDanger(true);
+        if (entityInSpace instanceof Player) { //if this space had the player in it: 
+            if (damageNextTurn == 0) { //if it will take no damage next turn: 
+                ((Player) entityInSpace).setInDanger(false); //the player is in no danger and should appear as such
+            } else { //if the tile has some damage it will take next turn: 
+                ((Player) entityInSpace).setInDanger(true); //the player is in danger and should appear as such
             }
         }
     }
 
+    //returns whether this space can be walked upon
+    //ok i just checked and this method is in use in exactly zero places but i'm still keeping it just in case its needed later
     public boolean spaceIsWalkable() {
-        if (entityInSpace == null) {
-            return true;
-        } else if (entityInSpace.getIfBlocksPathing() == false) {
-            return true;
-        } else {
-            return false;
+        if (entityInSpace == null) { //if there is no entity here: 
+            return true; //yes you can step here
+        } else if (entityInSpace.getIfBlocksPathing() == false) { //if there is an entity but it has no collision:
+            return true; //yes you can step here
+        } else { //otherwise, if there is an entity with collision: 
+            return false; //nope, this space is occupied and not walkable
         }
     }
-
+    
+    //makes whatever is in this square take damage
+    //used whenever the player attacks
     public void damageEntityHere(int damage) {
-        if (entityInSpace != null) {
-            entityInSpace.affectHealth(-1 * damage);
+        if (entityInSpace != null) { //if there's an entity: 
+            entityInSpace.affectHealth(-1 * damage); //damage that boy
         }
-    }
+    } //if the entity dies, the corspe will be dealt with by whatever called this method hopefully
 
+    //this is like damageEntityHere, but it doesn't damage enemies
+    //because if enemies damaged thenselves that would make the game way too easy
+    //the guys are not known for their stellar aim
     public void enemyAttacksHere(int damage) {
-        if (entityInSpace != null) {
-            if (!(entityInSpace instanceof Enemy)) { //shouldn't damage other enemies
-                entityInSpace.affectHealth(-1 * damage);
+        if (entityInSpace != null) { //if there is an entity to damage:
+            if (!(entityInSpace instanceof Enemy)) { //if that enemy is not an enemy: 
+                entityInSpace.affectHealth(-1 * damage); //damage it
             }
         }
-    }
+    } 
 }
+
+//Hi Mr. J! If you see this, that means that you have to drink some water. now. this is an order. drink some water right now or I will know.  
+//Btw, I asked my brother if he wanted to give you a message here, and he said: Mr. J, if you're reading this, please, please send help. This is Frank's brother, and he has trapped me in my basement and i cannot get out. 
+//my brother is such a silly guy!
+
+//(we don't even have a basement in our house lol)

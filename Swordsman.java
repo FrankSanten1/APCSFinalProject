@@ -8,7 +8,8 @@ public class Swordsman extends Enemy {
         super(12, 12, 3);
     }
 
-    
+    //this is called whenever the enemy enters the stage when it moves towards the player
+    //moves multiple times during this
     public ArrayList<Board> moveStage(Board currentSituation) throws CloneNotSupportedException{
         ArrayList<Board> animations = new ArrayList<Board>(); //will hold every step taken
         setIsHighlighted(true);
@@ -78,92 +79,100 @@ public class Swordsman extends Enemy {
             }
             //now, return back to the top of the for loop and potentially do it again
         }
-        //setIsHighlighted(false);
         //once all moves are done, return what happened
         return animations;
     }
 
+    //this runs whenever an enemy is setting up where they will attack for next turn
+    //usually right after moveStage
+    //the swordsman attacks the time closest to the player as well as tiles to the side of it that are diagonal to that first one
+    //basically attacks all 4 tiles around it except for the one furthest from the player
     public ArrayList<Board> setUpAttack(Board currentSituation) throws CloneNotSupportedException{
         
-        ArrayList<Board> animations = new ArrayList<Board>();
-        setIsHighlighted(true);
-        setAttackPowerInstance(getAttackPower());
-        animations.add(currentSituation.clone());
-        ArrayList<Point> placesToAttack = new ArrayList<Point>();
+        ArrayList<Board> animations = new ArrayList<Board>(); //of course, make the animations arrayList
+        setIsHighlighted(true); //highlight him to imply it's his turn
+        setAttackPowerInstance(getAttackPower()); //save the attackPower at this current time
+        animations.add(currentSituation.clone()); //first frame is just a rest frame when the enemy is highlighted
+        ArrayList<Point> placesToAttack = new ArrayList<Point>(); //initialize an array that will be filled soon
 
-        Point selfCoords = findSelfCoords(currentSituation);
-        Point directionToPlayer = findDirectionToPlayer(currentSituation);
+        //of course, needs a few things about the board to make descisions about which direction it will attack
+        Point selfCoords = findSelfCoords(currentSituation); //needs to know where itself is
+        Point directionToPlayer = findDirectionToPlayer(currentSituation); //needs to know what way the player is
 
-        if (Math.abs(directionToPlayer.x) > Math.abs(directionToPlayer.y)) {
-            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1));
+        if (Math.abs(directionToPlayer.x) > Math.abs(directionToPlayer.y)) { //if the player is mostly towards a horizontal direction: 
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1)); //add the points one above and below to the placesToAttack
             placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
-            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y));
-        } else if (Math.abs(directionToPlayer.x) < Math.abs(directionToPlayer.y)) {
-            placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y));
+            placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y)); //add the tile that is in the direction of the player
+        } else if (Math.abs(directionToPlayer.x) < Math.abs(directionToPlayer.y)) { //if the player is mostly towards a vertical direction:
+            placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y)); //add both horizontal points
             placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
-            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
-        } else {
-            double rand = Math.random();
-            if (rand > 0.5) {
-                placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1));
+            placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y)))); //add the vertical point that is towards the player
+        } else { //if neither x nor y is bigger: 
+            double rand = Math.random(); //randomize it
+            if (rand > 0.5) { //half chance it attacks horizontally
+                placesToAttack.add(new Point(selfCoords.x, selfCoords.y + 1)); //works same as above
                 placesToAttack.add(new Point(selfCoords.x, selfCoords.y - 1));
                 placesToAttack.add(new Point(selfCoords.x + (directionToPlayer.x / Math.abs(directionToPlayer.x)), selfCoords.y));
-            } else {
-                placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y));
+            } else { //half chance it attacks vertically
+                placesToAttack.add(new Point(selfCoords.x + 1, selfCoords.y)); //works same as above
                 placesToAttack.add(new Point(selfCoords.x - 1, selfCoords.y));
                 placesToAttack.add(new Point(selfCoords.x, selfCoords.y + (directionToPlayer.y / Math.abs(directionToPlayer.y))));
             }
         }
         
-        setPlacesToAttack(placesToAttack);
-        currentSituation = currentSituation.clone();
+        setPlacesToAttack(placesToAttack); //stores placesToAttack in an instance variable for later
+        currentSituation = currentSituation.clone(); //make currentSituation a copy to ensure no shenanigans come around when changing it
 
-        for (Point x : placesToAttack) {
-            currentSituation.getSpace(x).shiftDamageNextTurn(getAttackPower());
+        for (Point x : placesToAttack) { //loops through the places to attack
+            currentSituation.getSpace(x).shiftDamageNextTurn(getAttackPower()); //adds damage indicators for next turn
         }
-        Board temp = currentSituation.clone();
-        for (Point x : placesToAttack) {
-            temp.getSpace(x).setIsHighlighted(true);
-            if (temp.getSpace(x).getEntity() != null) {
-                temp.getSpace(x).getEntity().setColorOverride(new Color(255, 0, 255));
+        Board temp = currentSituation.clone(); //creates a temporary board
+        for (Point x : placesToAttack) { //loops through points 
+            temp.getSpace(x).setIsHighlighted(true); //sets all points in temp to be highlighted
+            if (temp.getSpace(x).getEntity() != null) { //if an entity is in that space: 
+                temp.getSpace(x).getEntity().setColorOverride(new Color(255, 0, 255)); //highlight them too
             }
         }
-        animations.add(temp);
-        animations.add(currentSituation.clone());
-        temp = currentSituation.clone();
-        ((Enemy)temp.getSpace(selfCoords).getEntity()).setIsHighlighted(false);
-        animations.add(temp);
+        animations.add(temp); //add in the temporary board as a frame
+        animations.add(currentSituation.clone()); //add in another clone of the currentSituation
+        temp = currentSituation.clone(); //reuse temp for something else
+        ((Enemy)temp.getSpace(selfCoords).getEntity()).setIsHighlighted(false); //unhighlight the player
+        animations.add(temp); //add it as a frame
 
-        return animations;
+        return animations; //whoo, done
     }
 
+    //damages all the points that it selected to damage last round
+    //honestly this would be a method in Enemy, but I want to make some enemies have more unique attack animations later on
     public ArrayList<Board> attack(Board currentSituation) throws CloneNotSupportedException{
-        ArrayList<Board> animations = new ArrayList<Board>();
-        setIsHighlighted(true);
-        animations.add(currentSituation.clone());
-        for (Point x : getPlacesToAttack()) {
-            currentSituation.getSpace(x).enemyAttacksHere(getAttackPowerInstance());
-            currentSituation.getSpace(x).shiftDamageNextTurn(-1 * getAttackPowerInstance());
+        ArrayList<Board> animations = new ArrayList<Board>(); //of course, the animations list
+        setIsHighlighted(true); //highlight the guy who's attacking
+        animations.add(currentSituation.clone()); //add that as a first frame
+        for (Point x : getPlacesToAttack()) { //loop through all the places selected to be attacked in the last setUpAttack
+            currentSituation.getSpace(x).enemyAttacksHere(getAttackPowerInstance()); //damage whatever is in that space
+            currentSituation.getSpace(x).shiftDamageNextTurn(-1 * getAttackPowerInstance()); //take off the damage indicators
         }
-        Board temp = currentSituation.clone();
-        for (Point x : getPlacesToAttack()) {
-            temp.getSpace(x).setEntity(new CosmeticX(255, 0, 0));
+        Board temp = currentSituation.clone(); //temp board to be filled with Xs
+        for (Point x : getPlacesToAttack()) { //loop through places to attack
+            temp.getSpace(x).setEntity(new CosmeticX(255, 0, 0)); //set up red cosmetic Xs there for cool effect
         }
-        animations.add(temp);
-        animations.add(currentSituation.clone());
-        setIsHighlighted(false);
-        animations.add(currentSituation);
+        animations.add(temp); //add temp as a frame
+        animations.add(currentSituation.clone()); //add normal board as a frame
+        setIsHighlighted(false); //stop highlighting
+        animations.add(currentSituation); //final frame where the enemy is unhighlighted
 
-        return animations;
+        return animations; //yayyyyy
     }
     
+    //simple toString
+    //swordsmen are {}. colored appropriately. 
     public String toString() {
-        if (getColorOverride() != null) {
-            return colorOverrideToAnsi() + "{}";
+        if (getColorOverride() != null) { //if you have a color override: 
+            return colorOverrideToAnsi() + "{}"; //use it
         }
-        if (getIsHighlighted()) {
-            return "\033[38;2;0;255;128m" + "{}";
-        }
-        return this.healthToColor() + "{}";
+        if (getIsHighlighted()) { //if it's supposed to be highlighted: 
+            return "\033[38;2;0;255;128m" + "{}"; //highlight it
+        } //otherwise: 
+        return this.healthToColor() + "{}"; //just use standard color for the health this guy's at
     }
 }

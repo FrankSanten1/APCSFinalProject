@@ -1,5 +1,7 @@
 public class Blocker extends Entity{
-    
+    //this is what makes up the walls of the arena
+    //basically cosmetic, but it's really easy to just make them an entity and it solves a surprising amount of problems. 
+
     public Blocker() {
         super(99999, 99999, true); //i m m e n s e
         //probably don't have to give that much health to him since he's already invulnerable (see below)

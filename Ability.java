@@ -45,4 +45,10 @@ public class Ability {
     public String description() {
         return "";
     }
+
+    //some abilities cost mana
+    //if so, they override this method to show how much mana they cost
+    public int getManaUsage() {
+        return 0;
+    }
 }
